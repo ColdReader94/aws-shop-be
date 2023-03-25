@@ -1,0 +1,68 @@
+service: product-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: dev
+  region: us-east-1
+  httpApi:
+    cors:
+      allowedOrigins: '*'
+      allowCredentials: false
+
+functions:
+  getProductsList:
+    handler: src/handler.getProductsList
+    events:
+      - httpApi:
+          path: /products
+          method: get
+          description: 'Get all products (products list)'
+          responseData: 
+            200:
+              description: 'Successful response'
+              bodyType: 'IProductList'
+            500:
+              description: 'Server error'
+
+  getProductsById:
+    handler: src/handler.getProductsById
+    events:
+      - httpApi:
+          path: /products/{id}
+          method: get
+          description: 'Get product by ID'
+          responseData: 
+            200:
+              description: 'Successful response'
+              bodyType: 'IProduct'
+            404:
+              description: 'Product not found error'
+            500:
+              description: 'Server error'
+
+custom:
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: true
+    platform: 'node'
+    packager: npm
+    packagePath: package.json
+  autoswagger:
+    title: 'Products API'
+    apiType: 'httpApi'
+    generateSwaggerOnDeploy: true
+    swaggerPath: 'swagger'
+    typefiles: ['./src/interfaces/product.interface.ts']
+    # useStage: false
+    basePath: '/'
+    # host: '4e72io0u32.execute-api.us-east-1.amazonaws.com'
+    schemes: ['https']
+
+plugins:
+  # - serverless-plugin-typescript
+  - serverless-esbuild
+  - serverless-auto-swagger
+  - serverless-offline

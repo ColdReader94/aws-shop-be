@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+      "@typescript-eslint"
+  ],
+  "ignorePatterns": ["*.js"],
+  "rules": {
+    "no-underscore-dangle": "off",
+    "no-console": "off",
+    "@typescript-eslint/indent": "off",
+    "prefer-destructuring": ["error", { "object": true, "array": false }],
+    "import/prefer-default-export": "off",
+    "linebreak-style": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 140,
+        "ignoreUrls": true
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "no-magic-numbers": [
+      "warn",
+      {
+        "ignore": [-1, 0, 1, 100, 1000],
+        "ignoreDefaultValues": true,
+        "ignoreArrayIndexes": true,
+        "ignoreObjects": true
+      }
+    ],
+    "no-empty": "error",
+    "import/no-extraneous-dependencies": 0,
+    "import/extensions": 0
+  }
+}
