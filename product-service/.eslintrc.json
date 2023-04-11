@@ -10,6 +10,7 @@
   ],
   "ignorePatterns": ["*.js"],
   "rules": {
+    "quotes": [2, "single", { "avoidEscape": true }],
     "no-underscore-dangle": "off",
     "no-console": "off",
     "@typescript-eslint/indent": "off",
@@ -24,15 +25,6 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "warn",
-    "no-magic-numbers": [
-      "warn",
-      {
-        "ignore": [-1, 0, 1, 100, 1000],
-        "ignoreDefaultValues": true,
-        "ignoreArrayIndexes": true,
-        "ignoreObjects": true
-      }
-    ],
     "no-empty": "error",
     "import/no-extraneous-dependencies": 0,
     "import/extensions": 0

@@ -3,13 +3,20 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs16.x
   stage: dev
   region: us-east-1
   httpApi:
     cors:
       allowedOrigins: '*'
       allowCredentials: false
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:166088341378:table/Products
+        - arn:aws:dynamodb:us-east-1:166088341378:table/Stocks
 
 functions:
   getProductsList:
@@ -22,9 +29,12 @@ functions:
           responseData: 
             200:
               description: 'Successful response'
-              bodyType: 'IProductList'
+              bodyType: 'TProductList'
             500:
               description: 'Server error'
+    environment:
+      PRODUCTS_TABLE_NAME: Products
+      STOCKS_TABLE_NAME: Stocks
 
   getProductsById:
     handler: src/handler.getProductsById
@@ -41,6 +51,60 @@ functions:
               description: 'Product not found error'
             500:
               description: 'Server error'
+    environment:
+      PRODUCTS_TABLE_NAME: Products
+      STOCKS_TABLE_NAME: Stocks
+
+  createProduct:
+    handler: src/handler.createProduct
+    events:
+      - httpApi:
+          path: /products
+          method: post
+          description: 'Create a new product'
+          bodyType: 'IProductRequestBody'
+          responseData: 
+            201:
+              description: 'Successful response'
+              bodyType: 'IProduct'
+            400:
+              description: 'Bad request'
+            500:
+              description: 'Server error'
+    environment:
+      PRODUCTS_TABLE_NAME: Products
+      STOCKS_TABLE_NAME: Stocks
+
+# resources:
+#   Resources:
+#     Products:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: Products
+#         AttributeDefinitions:
+#           - AttributeName: id
+#             AttributeType: S
+#           - AttributeName: title
+#             AttributeType: S
+#           - AttributeName: description
+#             AttributeType: S
+#           - AttributeName: price
+#             AttributeType: N
+#         KeySchema:
+#           - AttributeName: id
+#             KeyType: HASH
+#     Stocks:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: Stocks
+#         AttributeDefinitions:
+#           - AttributeName: product_id
+#             AttributeType: S
+#           - AttributeName: count
+#             AttributeType: N
+#         KeySchema:
+#           - AttributeName: product_id
+#             KeyType: HASH
 
 custom:
   esbuild:

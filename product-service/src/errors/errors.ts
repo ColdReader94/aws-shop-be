@@ -1,9 +1,9 @@
-import { HttpStatusCodes } from "../models/httpStatusCodes.model";
+import { HttpStatusCodes } from '../models/httpStatusCodes.model';
 
 export class HttpError extends Error {
     public statusCode: number;
 
-    constructor(message, statusCode) {
+    constructor(message: string, statusCode: number) {
       super(message);
       this.name = 'HttpError';
       this.statusCode = statusCode;
@@ -11,7 +11,13 @@ export class HttpError extends Error {
 }
 
 export class NotFoundError extends HttpError {
-    constructor(message) {
+    constructor(message: string) {
         super(`${message} not found`, HttpStatusCodes.NOT_FOUND);
+    }
+}
+
+export class ServerError extends HttpError {
+    constructor(message: string) {
+        super(`Server error: ${message}`, HttpStatusCodes.SERVER_ERROR);
     }
 }

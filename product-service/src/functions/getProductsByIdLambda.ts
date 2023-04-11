@@ -1,21 +1,22 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { HttpError } from "../errors/errors";
-import { HttpStatusCodes } from "../models/httpStatusCodes.model";
-import { GetProductListService } from "../services/getProductList.service";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { HttpStatusCodes } from '../models/httpStatusCodes.model';
+import { GetProductListService } from '../services/getProductList.service';
+import { CustomLogger } from '../services/customLogger';
 
 export const getProductsByIdLambda = async (
-    event: APIGatewayProxyEvent
-  ): Promise<APIGatewayProxyResult> => {
-    let response: APIGatewayProxyResult = {} as APIGatewayProxyResult;
-    try {
-      response.body = JSON.stringify(await GetProductListService.findProduct(event.pathParameters.id));
-      response.statusCode = HttpStatusCodes.OK;
-    } catch (error) {
-      if (error instanceof HttpError) {
-        response.statusCode = error.statusCode;
-        response.body = error.message;
-      }
-    }
-  
-    return response;
-  };
+  event: APIGatewayProxyEvent,
+  ...args: unknown[]
+): Promise<APIGatewayProxyResult> => {
+  const response: APIGatewayProxyResult = {} as APIGatewayProxyResult;
+  try {
+    CustomLogger.log('getProductsByIdLambda called with next arguments:', { ...event, ...args });
+    response.body = JSON.stringify(await GetProductListService.findProduct(event.pathParameters.id));
+    response.statusCode = HttpStatusCodes.OK;
+  } catch (error) {
+    CustomLogger.logError(error.message);
+    response.statusCode = error.statusCode;
+    response.body = error.message;
+  }
+
+  return response;
+};

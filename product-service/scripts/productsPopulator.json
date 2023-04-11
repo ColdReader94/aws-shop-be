@@ -1,0 +1,58 @@
+[
+  {
+    "count": 4,
+    "description": "4K UHD TV with HDR and 3D",
+    "id": "7567ec4b-b10c-48c5-9345-fc73c48a80aa",
+    "price": 999,
+    "title": "TV"
+  },
+  {
+    "count": 6,
+    "description": "Mega super phone with 32GB RAM and 512GB SSD",
+    "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a0",
+    "price": 400,
+    "title": "Phone"
+  },
+  {
+    "count": 7,
+    "description": "4K Monitor for designers",
+    "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a2",
+    "price": 500,
+    "title": "Monitor"
+  },
+  {
+    "count": 12,
+    "description": "Gaming PC",
+    "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a1",
+    "price": 900,
+    "title": "PC"
+  },
+  {
+    "count": 7,
+    "description": "Gaming laptop",
+    "id": "7567ec4b-b10c-48c5-9345-fc73c48a80a3",
+    "price": 800,
+    "title": "Laptop"
+  },
+  {
+    "count": 8,
+    "description": "Super fast tablet with 32GB RAM and 512GB SSD",
+    "id": "7567ec4b-b10c-48c5-9345-fc73348a80a1",
+    "price": 400,
+    "title": "Tablet"
+  },
+  {
+    "count": 2,
+    "description": "Gaming keyboard",
+    "id": "7567ec4b-b10c-48c5-9445-fc73c48a80a2",
+    "price": 50,
+    "title": "Keyboard"
+  },
+  {
+    "count": 3,
+    "description": "Gamepad for XStationBox",
+    "id": "7567ec4b-b10c-45c5-9345-fc73c48a80a1",
+    "price": 60,
+    "title": "Gamepad"
+  }
+]
