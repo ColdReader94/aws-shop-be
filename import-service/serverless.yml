@@ -1,0 +1,76 @@
+service: import-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: dev
+  region: us-east-1
+  httpApi:
+    cors:
+      allowedOrigins: '*'
+      allowedHeaders: '*'
+      allowedMethods: '*'
+  lambdaHashingVersion: 20201221
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:*"
+      Resource:
+        - arn:aws:s3:::imported-csv-sandx/uploaded/*
+        - arn:aws:s3:::imported-csv-sandx/parsed/*
+
+functions:
+  importProductsFile:
+    handler: ./src/handler.importProductsFile
+    events:
+      - httpApi:
+          queryStringParameters: 
+            name: 
+              type: string
+          path: /import
+          method: get
+          description: 'Import a csv'
+          responseData: 
+            200:
+              description: 'Successful response'
+            400:
+              description: 'Bad request'
+            404:
+              description: 'Not found'
+            500:
+              description: 'Server error'
+  importFileParser:
+    handler: ./src/handler.importFileParser
+    events:
+      - s3:
+          bucket: imported-csv-sandx
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
+
+custom:
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: true
+    platform: 'node'
+    packager: npm
+    packagePath: package.json
+  autoswagger:
+    title: 'Import service API'
+    apiType: 'httpApi'
+    generateSwaggerOnDeploy: true
+    swaggerPath: 'swagger'
+    typefiles: ['./src/interfaces/product.interface.ts']
+    # useStage: false
+    basePath: '/'
+    # host: '4e72io0u32.execute-api.us-east-1.amazonaws.com'
+    schemes: ['https']
+
+plugins:
+  # - serverless-plugin-typescript
+  - serverless-esbuild
+  - serverless-auto-swagger
+  - serverless-offline
