@@ -1,7 +1,7 @@
+import AWS from 'aws-sdk';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { HttpStatusCodes } from '../models/httpStatusCodes.model';
 import { CustomLogger } from '../services/customLogger';
-import AWS from 'aws-sdk';
 import { BadRequestError } from '../errors/errors';
 
 export const importProductsFileLambda = async (
@@ -17,11 +17,11 @@ export const importProductsFileLambda = async (
     }
     const params = {
       Bucket: 'imported-csv-sandx',
-      Key: `uploaded/${event.queryStringParameters.name}`,
+      Key: `${process.env.UPLOADED_FOLDER}/${event.queryStringParameters.name}`,
       ContentType: 'text/csv',
       Expires: 600,
     }
-    const s3 = new AWS.S3({ region: 'us-east-1' });
+    const s3 = new AWS.S3({ region: process.env.region });
     const s3Response = await s3.getSignedUrlPromise('putObject', params);
     CustomLogger.log('importProductsFile called with next arguments:', { ...event, ...args });
     response.statusCode = HttpStatusCodes.OK;
