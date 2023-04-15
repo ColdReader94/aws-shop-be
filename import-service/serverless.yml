@@ -102,6 +102,15 @@ resources:
         Protocol: email
         TopicArn:
           Ref: BatchImportProductSNSTopic
+    FilteredByProductPriceSNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: vadsdrv@yandex.ru
+        Protocol: email
+        TopicArn:
+          Ref: BatchImportProductSNSTopic
+        FilterPolicyScope: MessageBody
+        FilterPolicy: "{\"title\":[\"Phone\"]}"
 
 custom:
   esbuild:
@@ -117,9 +126,7 @@ custom:
     generateSwaggerOnDeploy: true
     swaggerPath: 'swagger'
     typefiles: ['./src/interfaces/product.interface.ts']
-    # useStage: false
     basePath: '/'
-    # host: '4e72io0u32.execute-api.us-east-1.amazonaws.com'
     schemes: ['https']
 
 plugins:

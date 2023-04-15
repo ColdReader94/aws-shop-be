@@ -35,11 +35,14 @@ export const catalogBatchProcessLambda = async (
       }
     ).promise();
     const sns = new AWS.SNS({ region: process.env.region });
-    await sns.publish({
-      Subject: 'Products import',
-      Message: `Next products was successfully imported: ${products.map((product) => product.PutRequest.Item.title).join(', ')}`,
-      TopicArn: process.env.SNS_URL,
-    }).promise();
+
+    products.forEach(async (product) => {
+      await sns.publish({
+        Subject: 'Product was successfully imported',
+        Message: JSON.stringify(product),
+        TopicArn: process.env.SNS_URL,
+      }).promise();
+    })
   } catch (error) {
     CustomLogger.logError(error.message);
   }
