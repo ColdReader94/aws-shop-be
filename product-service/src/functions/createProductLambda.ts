@@ -10,8 +10,8 @@ export const createProductLambda = async (
   const response: APIGatewayProxyResult = {} as APIGatewayProxyResult;
   try {
     CustomLogger.log('createProductLambda called with next arguments:', { ...event, ...args });
-    const createdItem: IProduct = await GetProductListService.createProduct(event.body);
-    response.body = JSON.stringify(createdItem);
+    // const createdItem: IProduct = await GetProductListService.createProduct(event.body);
+    // response.body = JSON.stringify(createdItem);
     response.statusCode = HttpStatusCodes.CREATED;
   } catch (error) {
     CustomLogger.logError(error.message);
