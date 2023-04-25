@@ -23,13 +23,13 @@ export class ServerError extends HttpError {
 }
 
 export class UnauthorizedError extends HttpError {
-    constructor(message?: string) {
-        super(`Unauthorized. ${message}`, HttpStatusCodes.UNAUTHORIZED);
+    constructor() {
+        super('Unauthorized.', HttpStatusCodes.UNAUTHORIZED);
     }
 }
 
 export class ForbiddenError extends HttpError {
-    constructor(message?: string) {
-        super(`Forbidden. ${message}`, HttpStatusCodes.FORBIDDEN);
+    constructor() {
+        super('Forbidden.', HttpStatusCodes.FORBIDDEN);
     }
 }

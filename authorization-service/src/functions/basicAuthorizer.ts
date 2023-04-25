@@ -1,26 +1,29 @@
-import AWS from 'aws-sdk';
 import { CustomLogger } from '../services/customLogger';
-import { APIGatewayAuthorizerResult, APIGatewayTokenAuthorizerEvent } from 'aws-lambda';
+import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 import { ForbiddenError, UnauthorizedError } from '../errors/errors';
 
-export const basicAuthorizerLambda = async (event: APIGatewayTokenAuthorizerEvent): Promise<APIGatewayAuthorizerResult>  => {
+export const basicAuthorizerLambda = async (event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult>  => {
   const createPolicy = (principalId: string, arn: string, effect: 'Allow' | 'Deny'): APIGatewayAuthorizerResult => ({
     principalId,
     policyDocument: {
       Version: '2012-10-17',
       Statement: [
         {
-          Action: 'execute-api:Invoke',
+          Action: ['execute-api:Invoke'],
           Effect: effect,
-          Resource: arn,
+          Resource: ['*'],
         }
       ]
     },
   });
-  const encodedCredentials = event.authorizationToken.split('.')[1];
+
+  const encodedCredentials = (event.headers?.Authorization || event.headers?.authorization)?.split(' ')[1];
   try {
+    if ((!event.headers?.Authorization && !event.headers?.authorization) || !encodedCredentials) {
+      throw new UnauthorizedError();
+    }
     const decodedCredentials = Buffer.from(encodedCredentials, 'base64').toString();
-    const [login, password] = decodedCredentials.split(':');
+    const [login, password] = decodedCredentials?.split('=');
 
     if (!login || !password) {
       throw new UnauthorizedError();
@@ -30,8 +33,8 @@ export const basicAuthorizerLambda = async (event: APIGatewayTokenAuthorizerEven
         !process.env.LOGIN ||
         process.env.LOGIN !== login ||
         process.env.PASSWORD !== password
-      ) {
-        throw new ForbiddenError();
+    ) {
+      throw new ForbiddenError();
     }
     return createPolicy(encodedCredentials, event.methodArn, 'Allow');
   } catch (error) {
