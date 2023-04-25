@@ -10,12 +10,6 @@ export class HttpError extends Error {
     }
 }
 
-export class NotFoundError extends HttpError {
-    constructor(message: string) {
-        super(`${message} not found`, HttpStatusCodes.NOT_FOUND);
-    }
-}
-
 export class BadRequestError extends HttpError {
     constructor(message: string) {
         super(message, HttpStatusCodes.BAD_REQUEST);

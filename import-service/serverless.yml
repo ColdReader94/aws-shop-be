@@ -19,6 +19,32 @@ provider:
       Resource:
         - arn:aws:s3:::imported-csv-sandx/uploaded/*
         - arn:aws:s3:::imported-csv-sandx/parsed/*
+    - Effect: Allow
+      Action:
+        - "sqs:*"
+      Resource:
+        - Fn::GetAtt: [ ImportProductSQSQueue, Arn ]
+    - Effect: Allow
+      Action:
+        - "sns:*"
+      Resource:
+        Ref: BatchImportProductSNSTopic
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:166088341378:table/Products
+        - arn:aws:dynamodb:us-east-1:166088341378:table/Stocks
+  environment:
+    SQS_URL:
+      Ref: ImportProductSQSQueue
+    SNS_URL:
+      Ref: BatchImportProductSNSTopic
+    PRODUCTS_TABLE_NAME: Products
+    STOCKS_TABLE_NAME: Stocks
+    REGION: us-east-1
+    UPLOADED_FOLDER: uploaded
+    PARSED_FOLDER: parsed
 
 functions:
   importProductsFile:
@@ -49,6 +75,42 @@ functions:
           rules:
             - prefix: uploaded/
           existing: true
+  catalogBatchProcess:
+    handler: ./src/handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt:
+              - ImportProductSQSQueue
+              - Arn
+
+resources:
+  Resources:
+    ImportProductSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: import-parser-queue
+    BatchImportProductSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: batch-import-topic
+    BatchImportProductSNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: vadsdrv@gmail.com
+        Protocol: email
+        TopicArn:
+          Ref: BatchImportProductSNSTopic
+    FilteredByProductPriceSNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: vadsdrv@yandex.ru
+        Protocol: email
+        TopicArn:
+          Ref: BatchImportProductSNSTopic
+        FilterPolicyScope: MessageBody
+        FilterPolicy: "{\"title\":[\"Phone\"]}"
 
 custom:
   esbuild:
@@ -64,9 +126,7 @@ custom:
     generateSwaggerOnDeploy: true
     swaggerPath: 'swagger'
     typefiles: ['./src/interfaces/product.interface.ts']
-    # useStage: false
     basePath: '/'
-    # host: '4e72io0u32.execute-api.us-east-1.amazonaws.com'
     schemes: ['https']
 
 plugins:
