@@ -11,6 +11,13 @@ provider:
       allowedOrigins: '*'
       allowedHeaders: '*'
       allowedMethods: '*'
+    authorizers:
+      basicAuthorizer:
+        type: request
+        functionArn: arn:aws:lambda:us-east-1:166088341378:function:authorizer-service-dev-basicAuthorizer
+        identitySource: 
+          - $request.header.Authorization
+        payloadVersion: '2.0'
   lambdaHashingVersion: 20201221
   iamRoleStatements:
     - Effect: Allow
@@ -35,6 +42,10 @@ provider:
       Resource:
         - arn:aws:dynamodb:us-east-1:166088341378:table/Products
         - arn:aws:dynamodb:us-east-1:166088341378:table/Stocks
+    - Effect: Allow
+      Action: "execute-api:Invoke"
+      Resource: 
+        - arn:aws:lambda:us-east-1:166088341378:function:authorizer-service-dev-basicAuthorizer
   environment:
     SQS_URL:
       Ref: ImportProductSQSQueue
@@ -55,6 +66,8 @@ functions:
             name: 
               type: string
           path: /import
+          authorizer:
+            name: basicAuthorizer
           method: get
           description: 'Import a csv'
           responseData: 
