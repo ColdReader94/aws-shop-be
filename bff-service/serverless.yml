@@ -1,0 +1,27 @@
+service: bff-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: dev
+  region: us-east-1
+  httpApi:
+    cors:
+      allowedOrigins: '*'
+      allowCredentials: false
+
+custom:
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: true
+    platform: 'node'
+    packager: npm
+    packagePath: package.json
+
+plugins:
+  # - serverless-plugin-typescript
+  - serverless-esbuild
+  - serverless-auto-swagger
+  - serverless-offline
